@@ -21,31 +21,40 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.logoutUser,
     required this.getCurrentUser,
     required this.sendPasswordResetEmail,
-  }) : super(AuthInitial()) {
+  }) : super(const AuthState()) {
     on<AuthCheckRequested>((event, emit) async {
       final result = await getCurrentUser(NoParams());
-      result.fold((failure) => emit(Unauthenticated()), (user) {
-        if (user != null) {
-          emit(Authenticated(user));
-        } else {
-          emit(Unauthenticated());
-        }
-      });
+      result.fold(
+        (failure) => emit(state.copyWith(status: AuthStatus.unauthenticated)),
+        (user) {
+          if (user != null) {
+            emit(state.copyWith(status: AuthStatus.authenticated, user: user));
+          } else {
+            emit(state.copyWith(status: AuthStatus.unauthenticated));
+          }
+        },
+      );
     });
 
     on<LoginSubmitted>((event, emit) async {
-      emit(AuthLoading());
+      emit(state.copyWith(status: AuthStatus.loading));
       final result = await loginUser(
         LoginParams(email: event.email, password: event.password),
       );
       result.fold(
-        (failure) => emit(AuthError(failure.message)),
-        (user) => emit(Authenticated(user)),
+        (failure) => emit(
+          state.copyWith(
+            status: AuthStatus.error,
+            errorMessage: failure.message,
+          ),
+        ),
+        (user) =>
+            emit(state.copyWith(status: AuthStatus.authenticated, user: user)),
       );
     });
 
     on<SignupSubmitted>((event, emit) async {
-      emit(AuthLoading());
+      emit(state.copyWith(status: AuthStatus.loading));
       final result = await signupUser(
         SignupParams(
           email: event.email,
@@ -54,26 +63,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
       result.fold(
-        (failure) => emit(AuthError(failure.message)),
-        (user) => emit(Authenticated(user)),
+        (failure) => emit(
+          state.copyWith(
+            status: AuthStatus.error,
+            errorMessage: failure.message,
+          ),
+        ),
+        (user) =>
+            emit(state.copyWith(status: AuthStatus.authenticated, user: user)),
       );
     });
 
     on<LogoutRequested>((event, emit) async {
-      emit(AuthLoading());
+      emit(state.copyWith(status: AuthStatus.loading));
       final result = await logoutUser(NoParams());
       result.fold(
-        (failure) => emit(AuthError(failure.message)),
-        (_) => emit(Unauthenticated()),
+        (failure) => emit(
+          state.copyWith(
+            status: AuthStatus.error,
+            errorMessage: failure.message,
+          ),
+        ),
+        (_) => emit(const AuthState(status: AuthStatus.unauthenticated)),
       );
     });
 
     on<PasswordResetRequested>((event, emit) async {
-      emit(AuthLoading());
-      final result = await sendPasswordResetEmail(event.email);
+      emit(state.copyWith(status: AuthStatus.loading));
+      final result = await sendPasswordResetEmail(
+        ResetPasswordParams(email: event.email),
+      );
       result.fold(
-        (failure) => emit(AuthError(failure.message)),
-        (_) => emit(PasswordResetEmailSent()),
+        (failure) => emit(
+          state.copyWith(
+            status: AuthStatus.error,
+            errorMessage: failure.message,
+          ),
+        ),
+        (_) => emit(state.copyWith(status: AuthStatus.passwordResetSent)),
       );
     });
   }

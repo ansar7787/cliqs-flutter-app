@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failure.dart';
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/network_info.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -15,16 +16,30 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
+  Future<Either<Failure, UserEntity?>> getCurrentUser() async {
+    try {
+      final user = await remoteDataSource.getCurrentUser();
+      return Right(user);
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> login(
     String email,
     String password,
   ) async {
     if (await networkInfo.isConnected) {
       try {
-        final remoteUser = await remoteDataSource.login(email, password);
-        return Right(remoteUser);
+        final user = await remoteDataSource.login(email, password);
+        return Right(user);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
-        return Left(AuthFailure(e.toString()));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(NetworkFailure('No internet connection'));
@@ -39,10 +54,12 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     if (await networkInfo.isConnected) {
       try {
-        final remoteUser = await remoteDataSource.signup(email, password, name);
-        return Right(remoteUser);
+        final user = await remoteDataSource.signup(email, password, name);
+        return Right(user);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
-        return Left(AuthFailure(e.toString()));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(NetworkFailure('No internet connection'));
@@ -54,18 +71,10 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await remoteDataSource.logout();
       return const Right(null);
+    } on AuthException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(AuthFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, UserEntity?>> getCurrentUser() async {
-    try {
-      final user = await remoteDataSource.getCurrentUser();
-      return Right(user);
-    } catch (e) {
-      return Left(AuthFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -75,8 +84,10 @@ class AuthRepositoryImpl implements AuthRepository {
       try {
         await remoteDataSource.sendPasswordResetEmail(email);
         return const Right(null);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
-        return Left(AuthFailure(e.toString()));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(NetworkFailure('No internet connection'));

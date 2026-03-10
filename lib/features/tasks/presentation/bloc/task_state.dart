@@ -1,31 +1,32 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/task_entity.dart';
+import '../../../../core/error/failure.dart';
 
-abstract class TaskState extends Equatable {
-  const TaskState();
+enum TaskStatus { initial, loading, loaded, error }
 
-  @override
-  List<Object?> get props => [];
-}
-
-class TaskInitial extends TaskState {}
-
-class TaskLoading extends TaskState {}
-
-class TasksLoaded extends TaskState {
+class TaskState extends Equatable {
+  final TaskStatus status;
   final List<TaskEntity> tasks;
+  final Failure? failure;
 
-  const TasksLoaded(this.tasks);
+  const TaskState({
+    this.status = TaskStatus.initial,
+    this.tasks = const [],
+    this.failure,
+  });
+
+  TaskState copyWith({
+    TaskStatus? status,
+    List<TaskEntity>? tasks,
+    Failure? failure,
+  }) {
+    return TaskState(
+      status: status ?? this.status,
+      tasks: tasks ?? this.tasks,
+      failure: failure ?? this.failure,
+    );
+  }
 
   @override
-  List<Object?> get props => [tasks];
-}
-
-class TaskError extends TaskState {
-  final String message;
-
-  const TaskError(this.message);
-
-  @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [status, tasks, failure];
 }

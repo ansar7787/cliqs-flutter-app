@@ -18,23 +18,24 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     required this.addTask,
     required this.updateTask,
     required this.deleteTask,
-  }) : super(TaskInitial()) {
+  }) : super(const TaskState()) {
     on<LoadTasksEvent>((event, emit) async {
-      emit(TaskLoading());
-      final result = await getTasks(event.userId);
+      emit(state.copyWith(status: TaskStatus.loading));
+      final result = await getTasks(GetTasksParams(userId: event.userId));
       result.fold(
-        (failure) => emit(TaskError(failure.message)),
-        (tasks) => emit(
-          TasksLoaded(
-            tasks..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
-          ),
-        ),
+        (failure) =>
+            emit(state.copyWith(status: TaskStatus.error, failure: failure)),
+        (tasks) {
+          final sortedTasks = List<TaskEntity>.from(tasks)
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          emit(state.copyWith(status: TaskStatus.loaded, tasks: sortedTasks));
+        },
       );
     });
 
     on<AddTaskEvent>((event, emit) async {
       final task = TaskEntity(
-        id: '', // Backend generates ID or we'll let REST handle it
+        id: '', // Backend generates ID
         title: event.title,
         description: event.description,
         createdAt: DateTime.now(),
@@ -43,7 +44,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         AddTaskParams(userId: event.userId, task: task),
       );
       result.fold(
-        (failure) => emit(TaskError(failure.message)),
+        (failure) =>
+            emit(state.copyWith(status: TaskStatus.error, failure: failure)),
         (_) => add(LoadTasksEvent(event.userId)),
       );
     });
@@ -56,7 +58,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         UpdateTaskParams(userId: event.userId, task: updatedTask),
       );
       result.fold(
-        (failure) => emit(TaskError(failure.message)),
+        (failure) =>
+            emit(state.copyWith(status: TaskStatus.error, failure: failure)),
         (_) => add(LoadTasksEvent(event.userId)),
       );
     });
@@ -66,7 +69,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         DeleteTaskParams(userId: event.userId, taskId: event.taskId),
       );
       result.fold(
-        (failure) => emit(TaskError(failure.message)),
+        (failure) =>
+            emit(state.copyWith(status: TaskStatus.error, failure: failure)),
+        (_) => add(LoadTasksEvent(event.userId)),
+      );
+    });
+
+    on<UpdateTaskEvent>((event, emit) async {
+      final result = await updateTask(
+        UpdateTaskParams(userId: event.userId, task: event.task),
+      );
+      result.fold(
+        (failure) =>
+            emit(state.copyWith(status: TaskStatus.error, failure: failure)),
         (_) => add(LoadTasksEvent(event.userId)),
       );
     });

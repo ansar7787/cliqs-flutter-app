@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/network/network_info.dart';
 import '../../domain/entities/task_entity.dart';
@@ -21,6 +22,8 @@ class TaskRepositoryImpl implements TaskRepository {
       try {
         final tasks = await remoteDataSource.getTasks(userId);
         return Right(tasks);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
         return Left(ServerFailure(e.toString()));
       }
@@ -33,15 +36,17 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Either<Failure, void>> addTask(String userId, TaskEntity task) async {
     if (await networkInfo.isConnected) {
       try {
-        final model = TaskModel(
+        final taskModel = TaskModel(
           id: task.id,
           title: task.title,
           description: task.description,
           isCompleted: task.isCompleted,
           createdAt: task.createdAt,
         );
-        await remoteDataSource.addTask(userId, model);
+        await remoteDataSource.addTask(userId, taskModel);
         return const Right(null);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
         return Left(ServerFailure(e.toString()));
       }
@@ -57,15 +62,17 @@ class TaskRepositoryImpl implements TaskRepository {
   ) async {
     if (await networkInfo.isConnected) {
       try {
-        final model = TaskModel(
+        final taskModel = TaskModel(
           id: task.id,
           title: task.title,
           description: task.description,
           isCompleted: task.isCompleted,
           createdAt: task.createdAt,
         );
-        await remoteDataSource.updateTask(userId, model);
+        await remoteDataSource.updateTask(userId, taskModel);
         return const Right(null);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
         return Left(ServerFailure(e.toString()));
       }
@@ -80,6 +87,8 @@ class TaskRepositoryImpl implements TaskRepository {
       try {
         await remoteDataSource.deleteTask(userId, taskId);
         return const Right(null);
+      } on AuthException catch (e) {
+        return Left(ServerFailure(e.message));
       } catch (e) {
         return Left(ServerFailure(e.toString()));
       }

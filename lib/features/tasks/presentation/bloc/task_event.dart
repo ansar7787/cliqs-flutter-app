@@ -50,3 +50,13 @@ class DeleteTaskEvent extends TaskEvent {
   @override
   List<Object?> get props => [userId, taskId];
 }
+
+class UpdateTaskEvent extends TaskEvent {
+  final String userId;
+  final TaskEntity task;
+
+  const UpdateTaskEvent({required this.userId, required this.task});
+
+  @override
+  List<Object?> get props => [userId, task];
+}

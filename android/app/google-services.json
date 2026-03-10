@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "235442600192",
+    "firebase_url": "https://cliqs-703c4-default-rtdb.firebaseio.com",
     "project_id": "cliqs-703c4",
     "storage_bucket": "cliqs-703c4.firebasestorage.app"
   },
@@ -12,7 +13,12 @@
           "package_name": "com.example.cliqs"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "235442600192-80al87d0ebqnapaebo5i72a55960dvkp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCmWJx9C0Jy2Uw1RCJolbt_NLlPJ-uNIoU"
@@ -20,7 +26,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235442600192-80al87d0ebqnapaebo5i72a55960dvkp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235442600192-vacvcteh6jmptqulfbjpda9rdgp5l5b1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cliqs"
+              }
+            }
+          ]
         }
       }
     }
