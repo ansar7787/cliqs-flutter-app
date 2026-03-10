@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "235442600192",
+    "project_id": "cliqs-703c4",
+    "storage_bucket": "cliqs-703c4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235442600192:android:636a4582cba2480ed49be5",
+        "android_client_info": {
+          "package_name": "com.example.cliqs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmWJx9C0Jy2Uw1RCJolbt_NLlPJ-uNIoU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
