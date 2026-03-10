@@ -9,6 +9,7 @@ import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/get_current_user.dart';
 import 'features/auth/domain/usecases/login_user.dart';
 import 'features/auth/domain/usecases/logout_user.dart';
+import 'features/auth/domain/usecases/send_password_reset_email.dart';
 import 'features/auth/domain/usecases/signup_user.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/tasks/data/datasources/task_remote_datasource.dart';
@@ -31,6 +32,7 @@ Future<void> init() async {
       signupUser: sl(),
       logoutUser: sl(),
       getCurrentUser: sl(),
+      sendPasswordResetEmail: sl(),
     ),
   );
 
@@ -39,6 +41,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => SignupUser(sl()));
   sl.registerLazySingleton(() => LogoutUser(sl()));
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
+  sl.registerLazySingleton(() => SendPasswordResetEmail(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(

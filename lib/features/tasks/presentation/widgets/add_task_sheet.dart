@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class AddTaskSheet extends StatefulWidget {
   final Function(String title, String desc) onSave;
@@ -70,7 +71,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
               onPressed: () {
                 if (_titleController.text.isNotEmpty) {
                   widget.onSave(_titleController.text, _descController.text);
-                  Navigator.pop(context);
+                  context.pop();
                 }
               },
               style: ElevatedButton.styleFrom(

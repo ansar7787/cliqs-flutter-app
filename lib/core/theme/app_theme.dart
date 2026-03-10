@@ -33,7 +33,7 @@ class AppTheme {
         bodyColor: lightText,
         displayColor: lightText,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: lightSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -57,7 +57,7 @@ class AppTheme {
         bodyColor: darkText,
         displayColor: darkText,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: darkSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

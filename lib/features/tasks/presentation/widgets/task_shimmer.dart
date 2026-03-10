@@ -7,16 +7,17 @@ class TaskShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
+    final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
+
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      enabled: true,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Container(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: Column(
+        children: List.generate(
+          5,
+          (index) => Container(
             margin: EdgeInsets.symmetric(vertical: 8.h),
             height: 80.h,
             width: double.infinity,
@@ -24,8 +25,8 @@ class TaskShimmer extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16.r),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

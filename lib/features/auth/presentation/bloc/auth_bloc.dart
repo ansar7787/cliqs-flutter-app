@@ -3,6 +3,7 @@ import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/get_current_user.dart';
 import '../../domain/usecases/login_user.dart';
 import '../../domain/usecases/logout_user.dart';
+import '../../domain/usecases/send_password_reset_email.dart';
 import '../../domain/usecases/signup_user.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -12,12 +13,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignupUser signupUser;
   final LogoutUser logoutUser;
   final GetCurrentUser getCurrentUser;
+  final SendPasswordResetEmail sendPasswordResetEmail;
 
   AuthBloc({
     required this.loginUser,
     required this.signupUser,
     required this.logoutUser,
     required this.getCurrentUser,
+    required this.sendPasswordResetEmail,
   }) : super(AuthInitial()) {
     on<AuthCheckRequested>((event, emit) async {
       final result = await getCurrentUser(NoParams());
@@ -62,6 +65,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       result.fold(
         (failure) => emit(AuthError(failure.message)),
         (_) => emit(Unauthenticated()),
+      );
+    });
+
+    on<PasswordResetRequested>((event, emit) async {
+      emit(AuthLoading());
+      final result = await sendPasswordResetEmail(event.email);
+      result.fold(
+        (failure) => emit(AuthError(failure.message)),
+        (_) => emit(PasswordResetEmailSent()),
       );
     });
   }

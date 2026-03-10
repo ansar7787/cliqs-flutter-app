@@ -1,4 +1,4 @@
-import '../entities/task_entity.dart';
+import '../../domain/entities/task_entity.dart';
 
 class TaskModel extends TaskEntity {
   const TaskModel({
